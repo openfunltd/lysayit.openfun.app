@@ -22,7 +22,9 @@ if (preg_match('#第(\d+)屆#', $agenda_obj->title, $matches)) {
     $url = sprintf("https://%s/legislator?term=%d&limit=200", $domain, $matches[1]);
     $legislator_obj = json_decode(file_get_contents($url));
     foreach ($legislator_obj->legislators as $legislator) {
-        $legislator->picUrl = str_replace('http://', 'https://', $legislator->picUrl);
+        if ($legislator->leaveDate and strtotime($legislator->leaveDate) < strtotime($agenda_obj->date)) {
+            continue;
+        }
 
         $voter = new StdClass;
         $voter->name = $legislator->name;
